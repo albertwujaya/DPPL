@@ -15,7 +15,20 @@ public class MainJFrame extends javax.swing.JFrame {
      */
     public MainJFrame() {
         initComponents();
+        System.out.println("[MainJFrame] Constructor: initComponents complete — showing PilihKuisionerPanel");
+        try {
         showPilihKuisionerPanel();
+        } catch (Throwable t) {
+            // Defensive: show full stack trace so caller (login) can display meaningful info
+            System.err.println("[MainJFrame] Error while initializing main frame:");
+            t.printStackTrace();
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "Gagal membuka jendela utama: " + t.toString() + "\nSee console for full stack trace",
+                    "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+            });
+        }
     }
 
     /**
@@ -33,8 +46,14 @@ public class MainJFrame extends javax.swing.JFrame {
      * Method untuk menampilkan panel pilih kuisioner
      */
     public void showPilihKuisionerPanel() {
+        try {
         com.example.PilihKuisionerPanel panel = new com.example.PilihKuisionerPanel();
         changePanel(panel);
+        } catch (Throwable t) {
+            System.err.println("[MainJFrame] Error while creating PilihKuisionerPanel:");
+            t.printStackTrace();
+            throw t; // rethrow so callers also see the problem
+        }
     }
 
     /**

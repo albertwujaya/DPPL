@@ -201,14 +201,27 @@ public class LoginPageFrame extends javax.swing.JFrame {
         String NIM = nimTextField.getText();
         String password = passwordTextField.getText();
 
-        if(NIM.equals("Admin") && password.equals("Admin123")){
+        if (NIM.equals("Admin") && password.equals("Admin123")) {
             JOptionPane.showMessageDialog(this, "Login Berhasil !");
-            this.dispose();
 
-            MainJFrame mainFrame = new MainJFrame();
-            mainFrame.setVisible(true);
-            mainFrame.setLocationRelativeTo(null);
-        }else{
+            System.out.println("[LoginPage] Login successful — creating MainJFrame...");
+            try {
+                // We're already on the EDT inside actionPerformed, so construct
+                // and show the main frame directly and catch any runtime errors.
+                MainJFrame mainFrame = new MainJFrame();
+                mainFrame.setLocationRelativeTo(null);
+                mainFrame.setVisible(true);
+
+                System.out.println("[LoginPage] MainJFrame shown, hiding login frame.");
+                // Hide (don't immediately dispose) so we can see logs if something goes wrong.
+                this.setVisible(false);
+            } catch (Throwable t) {
+                // Log any throwable to console so we can diagnose why main frame fails.
+                System.err.println("[LoginPage] Failed to open MainJFrame:");
+                t.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Gagal membuka jendela utama: " + t.getMessage());
+            }
+        } else {
             JOptionPane.showMessageDialog(this, "Login Gagal !");
         }
     }//GEN-LAST:event_loginButtonActionPerformed
