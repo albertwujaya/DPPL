@@ -10,10 +10,6 @@ package com.example;
  */
 
 import javax.swing.JOptionPane;
-import java.awt.Dimension;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Component;
 
 
 public class FormPengisianPanel extends javax.swing.JPanel {
@@ -57,8 +53,6 @@ public class FormPengisianPanel extends javax.swing.JPanel {
         mainContentPanel = new javax.swing.JPanel();
         mainContentPanel.setLayout(new javax.swing.BoxLayout(mainContentPanel, javax.swing.BoxLayout.Y_AXIS));
         mainContentPanel.setOpaque(false);
-        // center children horizontally
-        mainContentPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         // Build the complete content
         buildContent();
@@ -152,8 +146,6 @@ public class FormPengisianPanel extends javax.swing.JPanel {
         
         // Create main white card
         javax.swing.JPanel cardPanel = createCardPanel();
-        // center cardPanel horizontally in the BoxLayout
-        cardPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainContentPanel.add(cardPanel);
         
         // Add padding at bottom
@@ -181,10 +173,7 @@ public class FormPengisianPanel extends javax.swing.JPanel {
         cardPanel.setOpaque(false);
         cardPanel.setLayout(new javax.swing.BoxLayout(cardPanel, javax.swing.BoxLayout.Y_AXIS));
         cardPanel.setBorder(new javax.swing.border.EmptyBorder(32, 32, 32, 32));
-        // give a preferred width so centering works consistently
         cardPanel.setMaximumSize(new java.awt.Dimension(800, java.lang.Integer.MAX_VALUE));
-        cardPanel.setPreferredSize(new Dimension(800, 600));
-        cardPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         // Add title section
         addTitleSection(cardPanel);
@@ -235,7 +224,6 @@ public class FormPengisianPanel extends javax.swing.JPanel {
         instructionsScroll.getViewport().setOpaque(false);
         instructionsScroll.setPreferredSize(new java.awt.Dimension(700, 120));
         instructionsScroll.setMaximumSize(new java.awt.Dimension(700, 120));
-        instructionsScroll.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         cardPanel.add(instructionsScroll);
         cardPanel.add(javax.swing.Box.createVerticalStrut(24));
@@ -246,7 +234,6 @@ public class FormPengisianPanel extends javax.swing.JPanel {
         infoRow.setOpaque(false);
         infoRow.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
         infoRow.setMaximumSize(new java.awt.Dimension(700, 50));
-        infoRow.setPreferredSize(new java.awt.Dimension(700, 50));
         
         javax.swing.JLabel jLabel4 = new javax.swing.JLabel();
         jLabel4.setFont(new java.awt.Font("Georgia", 1, 12));
@@ -289,28 +276,18 @@ public class FormPengisianPanel extends javax.swing.JPanel {
             panelBagian.setLayout(new javax.swing.BoxLayout(panelBagian, javax.swing.BoxLayout.Y_AXIS));
             panelBagian.setOpaque(false);
             panelBagian.setMaximumSize(new java.awt.Dimension(700, java.lang.Integer.MAX_VALUE));
-            panelBagian.setPreferredSize(new java.awt.Dimension(700, panelBagian.getPreferredSize().height));
-            panelBagian.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             // Each bagian contains up to 5 questions
             for (int i = 0; i < 5 && qIndex < QUESTIONS.length; i++) {
-                // Use BorderLayout per row: question label on WEST, radio buttons panel CENTER (centered)
-                javax.swing.JPanel qRow = new javax.swing.JPanel(new BorderLayout());
+                javax.swing.JPanel qRow = new javax.swing.JPanel();
+                qRow.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
                 qRow.setOpaque(false);
                 qRow.setMaximumSize(new java.awt.Dimension(700, 40));
-                qRow.setPreferredSize(new java.awt.Dimension(700, 40));
                 
                 javax.swing.JLabel qLabel = new javax.swing.JLabel(QUESTIONS[qIndex]);
                 qLabel.setFont(new java.awt.Font("Georgia", 0, 12));
-                qLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 8, 0, 8));
-                // set preferred width so label doesn't push radio buttons off-center
-                qLabel.setPreferredSize(new Dimension(380, 20));
-                
-                // radio panel centered
-                javax.swing.JPanel radioPanel = new javax.swing.JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
-                radioPanel.setOpaque(false);
-                radioPanel.setPreferredSize(new Dimension(300, 30));
-                
+                qRow.add(qLabel);
+
                 javax.swing.ButtonGroup bg = new javax.swing.ButtonGroup();
                 questionGroups[qIndex] = bg;
                 for (int v = 1; v <= 5; v++) {
@@ -318,14 +295,11 @@ public class FormPengisianPanel extends javax.swing.JPanel {
                     rb.setActionCommand(String.valueOf(v));
                     rb.setFont(new java.awt.Font("Georgia", 0, 11));
                     bg.add(rb);
-                    radioPanel.add(rb);
+                    qRow.add(rb);
                 }
 
-                qRow.add(qLabel, BorderLayout.WEST);
-                qRow.add(radioPanel, BorderLayout.CENTER);
-
                 panelBagian.add(qRow);
-                panelBagian.add(javax.swing.Box.createVerticalStrut(8));
+                panelBagian.add(javax.swing.Box.createVerticalStrut(5));
                 qIndex++;
             }
 
