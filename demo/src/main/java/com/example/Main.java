@@ -4,11 +4,11 @@ package com.example;
 
 public class Main {
     public static void main(String[] args) {
-        //Hallo guys
-        System.out.println("Hello world!");
-        
-        LoginPageFrame frame = new LoginPageFrame();
-        frame.setTitle("SISTEM PENILAIAN KINERJA DOSEN");
-        frame.setVisible(true);
+        // Run Swing UI on Event Dispatch Thread
+        java.awt.EventQueue.invokeLater(() -> {
+            LoginPageFrame frame = new LoginPageFrame();
+            frame.setTitle("SISTEM PENILAIAN KINERJA DOSEN");
+            frame.setVisible(true);
+        });
     }
 }

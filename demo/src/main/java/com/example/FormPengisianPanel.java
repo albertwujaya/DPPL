@@ -20,8 +20,8 @@ public class FormPengisianPanel extends javax.swing.JPanel {
     private MataKuliah mataKuliah;
     private PilihKuisionerPanel parentPanel;
     private java.awt.Image backgroundImage;
-    // 20 questions -> groups for each question (values 1-5)
-    private javax.swing.ButtonGroup[] questionGroups = new javax.swing.ButtonGroup[20];
+    // Button groups will be allocated dynamically based on loaded questions
+    private javax.swing.ButtonGroup[] questionGroups = null;
     private javax.swing.JPanel mainContentPanel;
     private javax.swing.JScrollPane mainScrollPane;
     
@@ -209,7 +209,8 @@ public class FormPengisianPanel extends javax.swing.JPanel {
         javax.swing.JTextArea instructionsText = new javax.swing.JTextArea();
         instructionsText.setColumns(20);
         instructionsText.setRows(5);
-        instructionsText.setText("Petunjuk Pengisian: \n\nBerikan penilaian Anda secara objektif terhadap kinerja dosen selama satu semester ini. \nPenilaian Anda bersifat anonim dan akan digunakan untuk perbaikan proses belajar mengajar di masa depan.\nGunakan skala 1 sampai 5 dengan keterangan sebagai berikut:\n\n1  = Sangat Tidak Setuju / Sangat Buruk\n2 = Tidak Setuju / Buruk\n3 = Netral / Cukup\n4 = Setuju / Baik\n5 = Sangat Setuju / Sangat Baik");
+        // full instruction text (ensure not truncated)
+        instructionsText.setText("Petunjuk Pengisian:\n\nBerikan penilaian Anda secara objektif terhadap kinerja dosen selama satu semester ini.\nPenilaian Anda bersifat anonim dan akan digunakan untuk perbaikan proses pembelajaran.\nPilih nilai pada skala 1-5 untuk setiap pernyataan, di mana 1 = Sangat Tidak Setuju dan 5 = Sangat Setuju.\nSetelah menyelesaikan semua pertanyaan, tekan tombol Submit untuk menyimpan penilaian.");
         instructionsText.setFont(new java.awt.Font("Georgia", 0, 12));
         instructionsText.setOpaque(false);
         instructionsText.setLineWrap(true);
@@ -258,6 +259,9 @@ public class FormPengisianPanel extends javax.swing.JPanel {
     
     private void addQuestionsSection(javax.swing.JPanel cardPanel) {
         String[] QUESTIONS = loadQuestions();
+        // allocate groups to match number of loaded questions
+        questionGroups = new javax.swing.ButtonGroup[QUESTIONS.length];
+
         String[] bagian = {
             "Bagian A: Kemampuan Pedagogi (Penyampaian Materi)",
             "Bagian B: Penguasaan Materi", 
@@ -273,7 +277,7 @@ public class FormPengisianPanel extends javax.swing.JPanel {
             panelBagian.setOpaque(false);
             panelBagian.setMaximumSize(new java.awt.Dimension(700, java.lang.Integer.MAX_VALUE));
 
-            // Each bagian contains 5 questions
+            // Each bagian contains up to 5 questions
             for (int i = 0; i < 5 && qIndex < QUESTIONS.length; i++) {
                 javax.swing.JPanel qRow = new javax.swing.JPanel();
                 qRow.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
@@ -326,9 +330,18 @@ public class FormPengisianPanel extends javax.swing.JPanel {
     }
 
     public void submitPenilaian() {
-        int[] values = new int[20];
+        int nQuestions = (questionGroups == null) ? 0 : questionGroups.length;
+        if (nQuestions == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Tidak ada pertanyaan yang dimuat, submit dibatalkan.",
+                    "Peringatan",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int[] values = new int[nQuestions];
         int total = 0;
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < nQuestions; i++) {
             javax.swing.ButtonGroup bg = questionGroups[i];
             if (bg == null || bg.getSelection() == null) {
                 JOptionPane.showMessageDialog(this,
@@ -342,7 +355,7 @@ public class FormPengisianPanel extends javax.swing.JPanel {
             total += val;
         }
 
-        double rata = total / 20.0;
+        double rata = total / (double) nQuestions;
 
         if (mataKuliah != null) {
             mataKuliah.setSudahDiisi(true);
@@ -362,13 +375,13 @@ public class FormPengisianPanel extends javax.swing.JPanel {
         }
     }
 
-    // Try to load questions from classpath resource (/questions.txt) or from
-    // project resource file demo/src/main/resources/questions.txt or from
+    // Try to load questions from classpath resource (/com/example/questions.txt) or from
+    // project resource file demo/src/main/resources/com/example/questions.txt or from
     // working directory questions.txt. If none found, return the default list.
     private String[] loadQuestions() {
         java.util.List<String> lines = new java.util.ArrayList<>();
-        // 1) try classpath resource
-        try (java.io.InputStream is = getClass().getResourceAsStream("/questions.txt")) {
+        // 1) try classpath resource (package path)
+        try (java.io.InputStream is = getClass().getResourceAsStream("/com/example/questions.txt")) {
             if (is != null) {
                 try (java.io.BufferedReader r = new java.io.BufferedReader(new java.io.InputStreamReader(is))) {
                     String ln;
@@ -384,7 +397,7 @@ public class FormPengisianPanel extends javax.swing.JPanel {
 
         // 2) try project resource path
         if (lines.isEmpty()) {
-            java.io.File f = new java.io.File("demo/src/main/resources/questions.txt");
+            java.io.File f = new java.io.File("demo/src/main/resources/com/example/questions.txt");
             if (!f.exists()) f = new java.io.File("questions.txt");
             if (f.exists()) {
                 try (java.io.BufferedReader r = new java.io.BufferedReader(new java.io.FileReader(f))) {
