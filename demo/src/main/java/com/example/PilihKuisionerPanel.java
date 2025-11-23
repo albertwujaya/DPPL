@@ -305,7 +305,8 @@ public class PilihKuisionerPanel extends javax.swing.JPanel {
         // Title area inside card
         javax.swing.JPanel titleArea = new javax.swing.JPanel();
         titleArea.setOpaque(false);
-        titleArea.setLayout(new java.awt.BoxLayout(titleArea, javax.swing.BoxLayout.Y_AXIS));
+        // FIX: use javax.swing.BoxLayout (BoxLayout is in javax.swing, not java.awt)
+        titleArea.setLayout(new javax.swing.BoxLayout(titleArea, javax.swing.BoxLayout.Y_AXIS));
         jLabel2.setFont(new java.awt.Font("Georgia", java.awt.Font.PLAIN, 14));
         jLabel2.setText("SELAMAT DATANG DI");
         jLabel2.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
